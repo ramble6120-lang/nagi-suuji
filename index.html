@@ -197,6 +197,14 @@ body{
 @keyframes scamper{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 160px))}}
 #rin .hop{animation:hop .32s ease-in-out infinite alternate;display:block}
 @keyframes hop{from{transform:translateY(0)}to{transform:translateY(-7px)}}
+/* ---------- マップ上を歩くパーティ（なぎ・あん・りん） ---------- */
+.map-party{position:absolute;z-index:22;transform:translateX(-50%);display:flex;align-items:flex-end;
+  pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.32))}
+.map-party>span+span{margin-left:-12px}
+.map-party>span{display:block;animation:hop .36s ease-in-out infinite alternate}
+.map-party>span:nth-child(2){animation-delay:.12s}
+.map-party>span:nth-child(3){animation-delay:.24s}
+.map-party.walking>span{animation-duration:.22s}
 .toast{position:fixed;top:16px;left:50%;background:var(--ink);color:#fff;font-weight:900;
   padding:11px 20px;border-radius:999px;z-index:60;animation:tin 2.5s forwards;font-size:15px;white-space:nowrap}
 @keyframes tin{0%{opacity:0;transform:translate(-50%,-14px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-14px)}}
@@ -228,6 +236,38 @@ body{
 @keyframes fall{to{transform:translateY(112vh) rotate(560deg)}}
 .spk{position:absolute;left:50%;top:50%;pointer-events:none;font-size:15px;animation:spkk .7s ease-out forwards;z-index:5}
 @keyframes spkk{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+
+/* ---------- upgrades: boss / clock / closet / fx ---------- */
+.boss{position:relative;height:84px;display:flex;align-items:center;justify-content:center;margin-top:-2px}
+.bstar{font-size:62px;filter:drop-shadow(0 0 18px rgba(255,209,102,.95));animation:floaty 3s ease-in-out infinite}
+.bcld{position:absolute;font-size:33px;animation:floaty 2.6s ease-in-out infinite}
+.boss-lab{text-align:center;color:#fff;font-weight:900;font-size:13px;margin:0 0 8px;opacity:.92}
+.clk-leg{display:flex;gap:14px;font-size:12.5px;font-weight:900;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.bigspk{position:fixed;left:50%;top:40%;font-size:26px;z-index:56;pointer-events:none;animation:spkb .95s ease-out forwards}
+@keyframes spkb{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.5);opacity:0}}
+.shoot{position:fixed;z-index:0;font-size:22px;pointer-events:none;animation:shootA 1.5s ease-in forwards}
+@keyframes shootA{from{transform:translate(0,0);opacity:1}to{transform:translate(-44vw,38vh);opacity:0}}
+.node.newly{animation:wob .8s ease 3}
+@keyframes wob{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-3deg) scale(1.05)}75%{transform:rotate(3deg) scale(1.05)}}
+.title-nagi{animation:floaty 3.4s ease-in-out infinite;filter:drop-shadow(0 8px 14px rgba(0,0,0,.32));margin:0 0 2px}
+.closet-prev{display:flex;justify-content:center;margin-bottom:4px}
+.accgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px 0}
+.acc{background:#fbf3e3;border:3px solid transparent;border-radius:16px;padding:10px 6px;font-family:inherit;
+  font-weight:900;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink)}
+.acc .aico{font-size:26px}
+.acc.on{border-color:var(--star);background:#fff7df}
+.acc.lock{opacity:.45;pointer-events:none}
+.acc small{font-size:11px;color:var(--ink2);font-weight:700}
+/* クローゼット案内の吹き出し（最初のステージクリア後） */
+.closet-wrap{position:relative}
+.closet-wrap .icon-btn{animation:floaty 2.2s ease-in-out infinite}
+.closet-tip{position:absolute;top:46px;right:-6px;z-index:40;white-space:nowrap;
+  background:var(--star);color:#5a3b00;font-weight:900;font-size:12.5px;
+  padding:7px 11px;border-radius:13px;box-shadow:0 5px 14px rgba(0,0,0,.28);
+  animation:tipPop .35s ease-out both, floaty 2.2s ease-in-out infinite;pointer-events:none}
+.closet-tip::before{content:'';position:absolute;top:-7px;right:14px;
+  border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid var(--star)}
+@keyframes tipPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 
 @media (max-width:390px){
   .tenframe{grid-template-columns:repeat(5,42px);grid-auto-rows:42px}
@@ -281,9 +321,14 @@ const STAGES=[
   intro:[['chihiro','なぎちゃん、みて! もりの みちに きれいな ならびが あるよ'],
          ['chihiro','おなじ じゅんばんが、くりかえされてる…!'],
          ['an','ならびの ひみつが わかると、「つぎ」が よそうできるよ!']]},
+ {id:'clock', name:'とけいの とう', icon:'🕰️', concept:'clock', host:'an', qn:5,
+  intro:[['an','ここは とけいの とう! ちくたく いってるね'],
+         ['an','みじかい はりが「なんじ」、ながい はりが「なんぷん」だよ'],
+         ['an','ながい はりが 12を さしたら「ちょうど ○じ」だよ!']]},
  {id:'hill',  name:'ほしの おか', icon:'🌄', concept:'mix', host:'rin', qn:7,
   intro:[['rin','きゅい きゅい!(おかの うえに、おっきな ほしが みえるよ!)'],
-         ['an','さいごの ほしだ! いままでの すうじの ちからを ぜんぶ つかおう!'],
+         ['an','たいへん! さいごの ほしが「くらやみの くも」に かくされてる!'],
+         ['an','せいかいの ちからで、くもを ふきとばそう! いままでの すうじの ちからを ぜんぶ つかうよ!'],
          ['nagi','よーし、いくよ! みんな、ついてきて!']]}
 ];
 
@@ -322,10 +367,31 @@ const ENDING=[
  ['an','これからも、すうじと なかよしで いてね、なぎ!']
 ];
 
-const PRAISE=['せいかい!','ほしが ひかった!','いいね、その ちょうし!','みつけたね!','すうじの ちから、すごい!','ぴったり!'];
+const PRAISE=['せいかい!','ほしが ひかった!','いいね、その ちょうし!','みつけたね!','すうじの ちから、すごい!','ぴったり!','なぎ、すごい!','やったね、なぎ!','なぎ、その ちょうし!'];
 const CHEER=['おしい! もういちど みてみよう','だいじょうぶ、ゆっくりで いいよ','あんちゃんも いっしょに かんがえるよ','まちがえた こたえは うすく なったよ'];
 
 /* ===================== 3. AVATARS (hand-drawn SVG) ===================== */
+/* dress-up accessories for Nagi: unlocked by total stars */
+const ACC=[
+ {id:'hairpin',n:'ほしの ヘアピン',  need:0,  ico:'⭐'},
+ {id:'ribbon', n:'ピンクの りぼん',  need:2,  ico:'🎀'},
+ {id:'flower', n:'おはなの かんむり',need:5,  ico:'🌼'},
+ {id:'cat',    n:'ねこみみ',         need:8,  ico:'🐱'},
+ {id:'beret',  n:'あかい ベレーぼう',need:11, ico:'🧢'},
+ {id:'usagi',  n:'うさみみ',         need:14, ico:'🐰'},
+ {id:'tiara',  n:'きらきら ティアラ',need:17, ico:'👑'},
+ {id:'crown',  n:'ほしの かんむり',  need:20, ico:'🌟'}
+];
+const ACCSVG={
+ hairpin:'<text x="58" y="39" font-size="14">⭐</text>',
+ ribbon:'<g transform="translate(63,28) scale(.85)"><path d="M0 0 L-13 -8 L-13 8 Z" fill="#ff8fa9"/><path d="M0 0 L13 -8 L13 8 Z" fill="#ff8fa9"/><circle r="4" fill="#e76f8e"/></g>',
+ flower:'<text x="29" y="29" font-size="12">🌼</text><text x="44" y="22" font-size="12">🌼</text><text x="58" y="29" font-size="12">🌼</text>',
+ cat:'<path d="M27 32 L32 9 L43 25 Z" fill="#473733"/><path d="M31 27 L33.5 15 L39 23 Z" fill="#ff9fb6"/><path d="M73 32 L68 9 L57 25 Z" fill="#473733"/><path d="M69 27 L66.5 15 L61 23 Z" fill="#ff9fb6"/>',
+ beret:'<path d="M24 33 Q50 6 76 33 Q50 22 24 33 Z" fill="#e3554f"/><circle cx="50" cy="13" r="3.4" fill="#b23b36"/>',
+ usagi:'<g transform="rotate(-14 36 22)"><ellipse cx="36" cy="13" rx="7" ry="17" fill="#fff"/><ellipse cx="36" cy="15" rx="3.4" ry="11" fill="#ffd3de"/></g><g transform="rotate(14 64 22)"><ellipse cx="64" cy="13" rx="7" ry="17" fill="#fff"/><ellipse cx="64" cy="15" rx="3.4" ry="11" fill="#ffd3de"/></g>',
+ tiara:'<path d="M36 27 L40 14 L46 23 L50 10 L54 23 L60 14 L64 27 Z" fill="#ffd166" stroke="#dfa83e" stroke-width="1.5"/><circle cx="50" cy="10" r="2.6" fill="#ff8fa9"/>',
+ crown:'<path d="M33 28 L37 12 L45 22 L50 8 L55 22 L63 12 L67 28 Z" fill="#ffd166" stroke="#dfa83e" stroke-width="1.5"/><text x="44" y="15" font-size="9">⭐</text>'
+};
 function avatar(key,size){
   size=size||64;
   const skin='#ffdfc2', ink='#5a4a3c';
@@ -340,10 +406,12 @@ function avatar(key,size){
   let h;
   switch(key){
     case 'nagi': h='#473733';
+      var acc='hairpin';
+      try{if(S&&S.data&&S.data.equip)acc=S.data.equip;}catch(e){}
       return wrap(back(h)
         +'<path d="M19 48 Q17 76 26 80 L31 54 Z" fill="'+h+'"/><path d="M81 48 Q83 76 74 80 L69 54 Z" fill="'+h+'"/>'
         +face+bangs(h)+eyes(55,10)+blush+smile
-        +'<text x="60" y="38" font-size="14">⭐</text>');
+        +(ACCSVG[acc]||ACCSVG.hairpin));
     case 'ema': h='#a4683f';
       return wrap('<circle cx="15" cy="54" r="11" fill="'+h+'"/><circle cx="85" cy="54" r="11" fill="'+h+'"/>'
         +'<circle cx="20" cy="45" r="3.4" fill="#ff6f91"/><circle cx="80" cy="45" r="3.4" fill="#ff6f91"/>'
@@ -397,8 +465,9 @@ const pick=a=>a[rnd(0,a.length-1)];
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd(0,i);const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
 let S={screen:'boot',
-  data:{cleared:{},levels:{count:1,add:1,sub:1,make10:1,pattern:1},
-        stickers:[],sound:true,seenOpening:false,endingSeen:false},
+  data:{cleared:{},levels:{count:1,add:1,sub:1,make10:1,pattern:1,clock:1},
+        stickers:[],sound:true,seenOpening:false,endingSeen:false,
+        equip:'hairpin',itemsSeen:['hairpin'],seenUnlock:['home']},
   sess:null,dlg:null,res:null};
 const STREAK={};
 
@@ -438,11 +507,14 @@ function tone(f,st,d,type,g){
   o.connect(ga);ga.connect(AC.destination);
   o.start(t+st);o.stop(t+st+d+.02);
 }
-function sfx(kind){
+function sfx(kind,arg){
   if(!S.data.sound)return;
   try{
     ensureAC();
-    if(kind==='ok'){tone(523,0,.16);tone(659,.09,.16);tone(784,.18,.3);}
+    if(kind==='ok'){
+      const r=Math.pow(2,Math.min((arg||1)-1,7)/12);
+      tone(523*r,0,.16);tone(659*r,.09,.16);tone(784*r,.18,.3);
+    }
     else if(kind==='no'){tone(233,0,.22,'triangle',.1);}
     else if(kind==='tap'){tone(880,0,.06,'sine',.07);}
     else if(kind==='hint'){tone(660,0,.1,'sine',.09);tone(880,.1,.18,'sine',.09);}
@@ -518,18 +590,69 @@ function unlockAudio(){
   if(S.data.sound&&BGM.audio&&BGM.audio.paused)BGM.audio.play().catch(()=>{});
 }
 
-/* --- sky & fx --- */
+/* --- sky & fx: the sky gains stars as fragments are collected --- */
 function buildSky(){
+  let n=30;
+  try{for(const k in S.data.cleared)n+=S.data.cleared[k]*3;}catch(e){}
+  if(n>92)n=92;
   let h='';
-  for(let i=0;i<44;i++){
+  for(let i=0;i<n;i++){
     h+='<span style="left:'+rnd(0,99)+'%;top:'+rnd(0,96)+'%;font-size:'+rnd(7,15)
       +'px;animation-delay:'+(Math.random()*2.6).toFixed(2)+'s">✦</span>';
   }
   $('#sky').innerHTML=h;
 }
+function startShoot(){
+  setInterval(()=>{
+    if(Math.random()<.45)return;
+    const d=document.createElement('div');d.className='shoot';d.textContent='🌠';
+    d.style.right=rnd(2,30)+'%';d.style.top=rnd(4,30)+'%';
+    document.body.appendChild(d);setTimeout(()=>d.remove(),1600);
+  },9000);
+}
+function bigBurst(){
+  for(let i=0;i<16;i++){
+    const s=document.createElement('span');s.className='bigspk';s.textContent=pick(['✦','⭐','✨']);
+    s.style.setProperty('--dx',rnd(-140,140)+'px');
+    s.style.setProperty('--dy',rnd(-150,90)+'px');
+    document.body.appendChild(s);setTimeout(()=>s.remove(),1000);
+  }
+}
 function toast(msg){
   const d=document.createElement('div');d.className='toast';d.textContent=msg;
   document.body.appendChild(d);setTimeout(()=>d.remove(),2600);
+}
+/* マップ上のパーティ(なぎ・あん・りん)を現在地に配置。前回位置と違えば歩いて移動する */
+let partyAt=null;
+function placeParty(){
+  const map=document.querySelector('.map');if(!map)return;
+  const rows=map.querySelectorAll('.node-row');if(!rows.length)return;
+  const nextIdx=STAGES.findIndex(st=>!S.data.cleared[st.id]);
+  const target=(nextIdx<0)?STAGES.length-1:nextIdx;          /* 全クリア時は最終ステージへ */
+  const node=rows[target]&&rows[target].querySelector('.node');if(!node)return;
+  let party=map.querySelector('.map-party');
+  if(!party){
+    party=document.createElement('div');party.className='map-party';
+    party.innerHTML='<span>'+avatar('nagi',46)+'</span><span>'+avatar('an',40)+'</span><span>'+avatar('rin',36)+'</span>';
+    map.appendChild(party);
+  }
+  const mr=map.getBoundingClientRect();
+  const center=el=>{const r=el.getBoundingClientRect();return {x:r.left-mr.left+r.width/2,y:r.top-mr.top-30};};
+  const set=p=>{party.style.left=p.x+'px';party.style.top=p.y+'px';};
+  const to=center(node);
+  const prevNode=(partyAt!=null&&partyAt!==target&&rows[partyAt])?rows[partyAt].querySelector('.node'):null;
+  if(prevNode){
+    party.style.transition='none';set(center(prevNode));     /* まず前のステージに立たせる */
+    void party.offsetWidth;                                   /* レイアウト確定 */
+    party.classList.add('walking');
+    party.style.transition='left 1.1s ease-in-out, top 1.1s ease-in-out';
+    if(S.data.sound){try{sfx('up');}catch(e){}}
+    requestAnimationFrame(()=>set(to));                       /* 次のステージへ歩く */
+    setTimeout(()=>party.classList.remove('walking'),1200);
+  }else{
+    party.style.transition='none';set(to);
+  }
+  partyAt=target;
 }
 let bubT=null;
 function bubble(key,text){
@@ -695,16 +818,44 @@ function genPat(lv){
     hints:['すうじが いくつずつ かわって いるか、みてみよう','かわりかたに しるしを つけたよ!']};
 }
 
+/* clock reading: L1 o'clock, L2 mixed, L3 half-past (tricky hour hand) */
+function genClock(lv){
+  const h=rnd(1,12);
+  let half;
+  if(lv===1)half=false;
+  else if(lv===2)half=Math.random()<.5;
+  else half=true;
+  const ans=half?(h+'じはん'):(h+'じ');
+  let choices;
+  if(!half){
+    const hs=[h];
+    while(hs.length<3){const x=rnd(1,12);if(hs.indexOf(x)<0)hs.push(x);}
+    shuffle(hs);
+    choices=hs.map(x=>({label:x+'じ',v:x+'じ'}));
+  }else{
+    const nh=h%12+1;
+    choices=shuffle([h+'じはん',nh+'じはん',h+'じ']).map(x=>({label:x,v:x}));
+  }
+  return{concept:'clock',lv:lv,text:'とけいは なんじかな?',
+    vis:{t:'clock',h:h,m:half?30:0},answer:ans,choices:choices,autoVis:true,
+    explain:half
+      ?('みじかい はりは '+h+'と '+(h%12+1)+'の あいだ。ながい はりは 6。だから '+NUM(ans)+'!')
+      :('みじかい はりは '+h+'、ながい はりは 12。だから '+NUM(ans)+'!'),
+    hints:['みじかい はりは「なんじ」、ながい はりは「なんぷん」だよ',
+           half?'ながい はりが 6に きたら「はん」だよ!':'ながい はりが 12なら「ちょうど」だよ!']};
+}
+
 function genFor(stage){
   let c=stage.concept;
-  if(c==='mix')c=pick(['count','add','sub','make10','pattern']);
-  const lv=S.data.levels[c];
+  if(c==='mix')c=pick(['count','add','sub','make10','pattern','clock']);
+  const lv=S.data.levels[c]||1;
   const th=themeFor(stage.id,c);
   switch(c){
     case 'count':return genCount(lv,th);
     case 'add':return genAdd(lv,th);
     case 'sub':return genSub(lv,th);
     case 'make10':return genTen(lv,th);
+    case 'clock':return genClock(lv);
     default:return genPat(lv);
   }
 }
@@ -722,6 +873,7 @@ function render(){
   }
   bgmPlay(sceneTrack());
   window.scrollTo(0,0);
+  if(S.screen==='map')requestAnimationFrame(placeParty);  /* マップ上のパーティを配置/移動 */
 }
 function soundBtn(){
   return '<button class="icon-btn" id="sndbtn" onclick="toggleSound()">'+(S.data.sound?'🔊':'🔇')+'</button>';
@@ -729,11 +881,12 @@ function soundBtn(){
 
 function vTitle(){
   const cont=Object.keys(S.data.cleared).length>0;
-  const cast=['nagi','an','rin','ema','chihiro','sensei','mama','papa'].map(k=>avatar(k,44)).join('');
+  const cast=['an','rin','ema','chihiro','sensei','mama','papa'].map(k=>avatar(k,44)).join('');
   return '<div class="screen"><div class="title-wrap">'
     +'<div class="logo-star">⭐</div>'
     +'<div class="game-title">なぎと<br>すうじの ほし</div>'
     +'<div class="game-sub">— ほしの かけらを あつめる だいぼうけん —</div>'
+    +'<div class="title-nagi">'+avatar('nagi',104)+'</div>'
     +'<button class="btn star big" style="max-width:280px" onclick="startGame()">'
     +(cont?'▶ つづきから':'▶ はじめる')+'</button>'
     +'<div class="title-cast">'+cast+'</div>'
@@ -744,13 +897,19 @@ function vTitle(){
 function totalStars(){let t=0;for(const k in S.data.cleared)t+=S.data.cleared[k];return t;}
 function vMap(){
   let rows='';
+  /* 最初のステージ「なぎの いえ」クリア後、まだ着替えていなければ👗を案内 */
+  const showClosetTip=!!S.data.cleared['home']&&!S.data.closetTipSeen;
   const nextIdx=STAGES.findIndex(st=>!S.data.cleared[st.id]);
+  const newly=[];
   STAGES.forEach((st,i)=>{
     const unlocked=(i===0)||!!S.data.cleared[STAGES[i-1].id];
     const stars=S.data.cleared[st.id]||0;
+    const isNew=unlocked&&!stars&&S.data.seenUnlock.indexOf(st.id)<0;
+    if(isNew){newly.push(st);S.data.seenUnlock.push(st.id);}
     const cls=['node'];
     if(!unlocked)cls.push('locked');
     if(unlocked&&i===nextIdx)cls.push('next');
+    if(isNew)cls.push('newly');
     rows+='<div class="node-row '+((i%2===0)?'l':'r')+'">'
       +'<button class="'+cls.join(' ')+'" onclick="startStage('+i+')">'
       +(!unlocked?'<span class="lockmark">🔒</span>':'')
@@ -759,10 +918,16 @@ function vMap(){
       +'<div class="nstars">'+(stars?'★'.repeat(stars):'')+'</div>'
       +'</button></div>';
   });
+  if(newly.length){
+    save();
+    setTimeout(()=>{toast('「'+newly[0].name+'」へ いけるように なったよ!');sfx('up');},600);
+  }
   return '<div class="screen">'
     +'<div class="hdr">'
     +'<div class="pill">⭐ × '+totalStars()+'</div>'
     +'<div class="sp"></div>'
+    +'<div class="closet-wrap"><button class="icon-btn" onclick="openCloset()" title="クローゼット">👗</button>'
+    +(showClosetTip?'<div class="closet-tip">ここで きがえが できるよ!</div>':'')+'</div>'
     +'<button class="btn small ghost" onclick="openStickers()">シールちょう</button>'
     +soundBtn()
     +'</div>'
@@ -789,6 +954,7 @@ function advDlg(){
   else{charVoice(S.dlg.arr[S.dlg.i][0]);render();}
 }
 
+const CLD=[[-34,-6],[2,-16],[34,-4],[-16,12],[20,14],[-44,8],[44,12]];
 function vPlay(){
   const ss=S.sess,st=STAGES[ss.si],q=ss.q;
   let dots='';
@@ -796,6 +962,13 @@ function vPlay(){
     if(i<ss.qi)dots+='<div class="dot done">⭐</div>';
     else if(i===ss.qi)dots+='<div class="dot cur"></div>';
     else dots+='<div class="dot"></div>';
+  }
+  let boss='';
+  if(st.id==='hill'){
+    const remain=ss.qn-ss.qi;
+    boss='<div class="boss"><span class="bstar">🌟</span>'
+      +CLD.slice(0,remain).map((p,i)=>'<span class="bcld" style="transform:translate('+p[0]+'px,'+p[1]+'px);animation-delay:'+(i*.3)+'s">☁️</span>').join('')
+      +'</div><div class="boss-lab">せいかいで「くらやみの くも」を ふきとばせ! のこり '+remain+'</div>';
   }
   return '<div class="screen">'
     +'<div class="hdr">'
@@ -806,10 +979,13 @@ function vPlay(){
     +soundBtn()
     +'</div>'
     +'<div class="dots">'+dots+'</div>'
+    +boss
     +'<div class="qcard"><div class="qtext">'+q.text+'</div>'
     +'<div class="vis" id="vis">'+visHTML(q,ss.hint)+'</div></div>'
     +'<div class="answers">'
-    +q.choices.map((c,i)=>'<button class="ans" id="ans'+i+'" onclick="onAnswer('+i+')">'+c.label+'</button>').join('')
+    +q.choices.map((c,i)=>'<button class="ans" id="ans'+i+'"'
+      +(String(c.label).length>2?' style="font-size:21px"':'')
+      +' onclick="onAnswer('+i+')">'+c.label+'</button>').join('')
     +'</div>'
     +'<div style="height:100px"></div>'
     +'<button class="fab" onclick="useHint()">'+avatar('an',42)+'<span class="flabel">ヒント</span></button>'
@@ -822,6 +998,28 @@ function objHTML(it,idx,showB){
   if(it.ghost)cls.push('ghost');
   const b=(showB&&it.bn)?'<span class="bdg">'+it.bn+'</span>':'';
   return '<div class="'+cls.join(' ')+'" style="animation-delay:'+(idx*0.03).toFixed(2)+'s">'+it.e+b+'</div>';
+}
+function clockSVG(h,m,hint){
+  const cx=85,cy=85;
+  let hl='',nums='';
+  for(let i=1;i<=12;i++){
+    const a=(i*30-90)*Math.PI/180;
+    const nx=cx+Math.cos(a)*60, ny=cy+Math.sin(a)*60;
+    if(hint>=2&&(i===h||(m===30&&i===6))){
+      hl+='<circle cx="'+nx.toFixed(1)+'" cy="'+ny.toFixed(1)+'" r="13" fill="'+(i===h?'#ffe2a8':'#cfe7ff')+'"/>';
+    }
+    nums+='<text x="'+nx.toFixed(1)+'" y="'+(ny+6).toFixed(1)+'" text-anchor="middle" font-size="17" font-weight="900" fill="#5a4a3c">'+i+'</text>';
+  }
+  const ha=((h%12)*30+m*.5-90)*Math.PI/180, ma=(m*6-90)*Math.PI/180;
+  const hand=(ang,len,col,w)=>'<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+Math.cos(ang)*len).toFixed(1)
+    +'" y2="'+(cy+Math.sin(ang)*len).toFixed(1)+'" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"/>';
+  return '<svg width="170" height="170" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="80" fill="#fffdf7" stroke="#eadfcb" stroke-width="6"/>'
+    +hl+nums
+    +hand(ma,52,'#6ab6ff',6)
+    +hand(ha,36,'#ff8c69',9)
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="6" fill="#5a4a3c"/>'
+    +'</svg>';
 }
 function visHTML(q,hint){
   const show=q.autoVis||hint>=1;
@@ -866,6 +1064,11 @@ function visHTML(q,hint){
     }
     return '<div class="tenframe">'+cells+'</div>';
   }
+  if(v.t==='clock'){
+    let leg='';
+    if(hint>=1)leg='<div class="clk-leg"><span style="color:#d96b4c">● みじかい はり=なんじ</span><span style="color:#4a92d6">● ながい はり=なんぷん</span></div>';
+    return '<div style="text-align:center">'+clockSVG(v.h,v.m,hint)+leg+'</div>';
+  }
   if(v.t==='seq'){
     let chips=v.seq.map((x,i)=>{
       let cls='chip',tag='';
@@ -888,6 +1091,35 @@ function modal(html){
 }
 function closeModal(){const d=$('#ovl');if(d)d.remove();}
 
+function openCloset(){
+  sfx('tap');
+  if(!S.data.closetTipSeen){S.data.closetTipSeen=true;save();}  /* 案内の吹き出しは一度開いたら消す */
+  const ts=totalStars();
+  let g='';
+  ACC.forEach(a=>{
+    const open=ts>=a.need;
+    if(open){
+      const on=S.data.equip===a.id;
+      g+='<button class="acc'+(on?' on':'')+'" onclick="equipAcc(\''+a.id+'\')">'
+        +'<span class="aico">'+a.ico+'</span>'+a.n
+        +(on?'<small>いま これ!</small>':'<small>タップで きがえる</small>')+'</button>';
+    }else{
+      g+='<div class="acc lock"><span class="aico">🔒</span>'+a.n
+        +'<small>ほし '+a.need+'こで ひらくよ</small></div>';
+    }
+  });
+  modal('<h3>なぎの クローゼット</h3>'
+    +'<div class="closet-prev">'+avatar('nagi',92)+'</div>'
+    +'<div style="font-weight:900;font-size:13px;color:var(--ink2)">いまの ほし: ⭐ × '+ts+'</div>'
+    +'<div class="accgrid">'+g+'</div>'
+    +'<button class="btn small star" onclick="closeModal()">とじる</button>');
+}
+function equipAcc(id){
+  S.data.equip=id;save();
+  sfx('sticker');
+  openCloset();
+}
+
 function openStickers(){
   sfx('tap');
   let g='';
@@ -904,7 +1136,8 @@ function openStickers(){
 function openParent(){
   modal('<h3>おうちの方へ</h3><div class="parent-note">'
    +'<h4>このゲームについて</h4>小学1年生向けの算数アドベンチャーです。お子さまが一人で遊べるよう、文章はすべて ひらがな・カタカナ+数字(分かち書き)で表示されます。'
-   +'<h4>学習単元</h4>① 数かぞえ ② たし算(あわせていくつ) ③ ひき算(のこりはいくつ) ④ 10の合成 ⑤ きまり見つけ(パターン) ⑥ 総合ステージ'
+   +'<h4>学習単元</h4>① 数かぞえ ② たし算(あわせていくつ) ③ ひき算(のこりはいくつ) ④ 10の合成 ⑤ きまり見つけ(パターン) ⑥ とけいの読み(○時・○時半) ⑦ 総合ステージ(ボス戦)'
+   +'<h4>ごほうびシステム</h4>★を集めるとクローゼット(👗)で着せかえアイテムが解放されます(全8種、最大★21)。連続正解でコンボ演出と正解音の音程が上がります。集めた星の分だけ背景の夜空の星も増えていきます。'
    +'<h4>難易度の自動調整</h4>ノーヒントで2問連続正解すると単元ごとにレベルアップ(最大3)。つまずきが続くと自動でレベルが下がり、具体物のヒントが先に表示されます。'
    +'<h4>3段階ヒント(ペナルティなし)</h4>あんちゃん=考え方のヒント → りんくん=番号付きで一緒に数える → 3回まちがえたら答えと考え方を確認して次へ進みます。'
    +'<h4>進捗の保存</h4>クリア状況・レベル・シールは自動保存されます(同じ環境で開くと続きから遊べます)。'
@@ -955,8 +1188,9 @@ function vResult(){
 
 /* ===================== 7. GAME LOGIC ===================== */
 function freshData(){
-  return {cleared:{},levels:{count:1,add:1,sub:1,make10:1,pattern:1},
-          stickers:[],sound:true,seenOpening:false,endingSeen:false};
+  return {cleared:{},levels:{count:1,add:1,sub:1,make10:1,pattern:1,clock:1},
+          stickers:[],sound:true,seenOpening:false,endingSeen:false,
+          equip:'hairpin',itemsSeen:['hairpin'],seenUnlock:['home']};
 }
 
 function startGame(){
@@ -976,7 +1210,7 @@ function startStage(i){
 }
 function beginRound(i){
   const st=STAGES[i];
-  S.sess={si:i,qn:st.qn,qi:0,q:genFor(st),missQ:0,missRound:0,hint:0,lock:false};
+  S.sess={si:i,qn:st.qn,qi:0,q:genFor(st),missQ:0,missRound:0,hint:0,lock:false,combo:0};
   S.screen='play';render();
 }
 function backToMap(){sfx('tap');S.sess=null;S.screen='map';render();}
@@ -986,12 +1220,20 @@ function onAnswer(k){
   const q=ss.q,c=q.choices[k];
   const btn=$('#ans'+k);
   if(String(c.v)===String(q.answer)){
-    ss.lock=true;sfx('ok');
+    ss.lock=true;
+    ss.combo=(ss.combo||0)+1;
+    sfx('ok',ss.combo);
     if(btn){btn.classList.add('win');sparkle(btn);}
-    bubble('an',pick(PRAISE));
+    let pr=pick(PRAISE),who='an';
+    if(ss.combo>=2){
+      pr=ss.combo+'れんぞく! '+pr;
+      who=STAGES[ss.si].host;
+    }
+    if(ss.combo===3||ss.combo===5||ss.combo===7)bigBurst();
+    bubble(who,pr);
     setTimeout(endQuestion,900);
   }else{
-    sfx('no');ss.missQ++;ss.missRound++;
+    sfx('no');ss.missQ++;ss.missRound++;ss.combo=0;
     if(btn){
       btn.classList.add('shake');
       setTimeout(()=>{btn.classList.remove('shake');btn.classList.add('out');},380);
@@ -1064,11 +1306,22 @@ function finishRound(){
   S.data.cleared[st.id]=Math.max(prev,stars);
   let fresh=false;
   if(S.data.stickers.indexOf(st.id)<0){S.data.stickers.push(st.id);fresh=true;}
+  /* accessory milestone unlocks */
+  const ts=totalStars();
+  let newAcc=null;
+  ACC.forEach(a=>{
+    if(ts>=a.need&&S.data.itemsSeen.indexOf(a.id)<0){
+      S.data.itemsSeen.push(a.id);
+      if(a.need>0)newAcc=a;
+    }
+  });
   save();
+  buildSky();
   S.res={si:ss.si,stars:stars,newSticker:fresh};
   S.sess=null;
   sfx('clear');confetti();
   if(fresh)setTimeout(()=>sfx('sticker'),750);
+  if(newAcc)setTimeout(()=>{toast('あたらしい おしゃれ「'+newAcc.n+'」を ゲット! 👗を みてみて');sfx('sticker');},1400);
   S.screen='result';render();
 }
 function afterResult(){
@@ -1085,12 +1338,13 @@ function afterResult(){
 
 /* ===================== 8. INIT ===================== */
 (async function init(){
-  buildSky();rinInit();
+  buildSky();rinInit();startShoot();
   document.addEventListener('pointerdown',unlockAudio,{passive:true});
   const saved=await store.load();
   if(saved){
     S.data=Object.assign(freshData(),saved);
-    S.data.levels=Object.assign({count:1,add:1,sub:1,make10:1,pattern:1},saved.levels||{});
+    S.data.levels=Object.assign({count:1,add:1,sub:1,make10:1,pattern:1,clock:1},saved.levels||{});
+    buildSky();
   }
   S.screen='title';render();
 })();
